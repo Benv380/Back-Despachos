@@ -53,10 +53,19 @@ jobs:
             -o ProxyJump=ubuntu@${{ secrets.EC2_FRONTEND_HOST }} \
             -o StrictHostKeyChecking=no \
             ubuntu@${{ secrets.EC2_BACKEND_PRIVATE_IP }} << 'ENDSSH'
+
               echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+
               docker pull ${{ secrets.DOCKERHUB_USERNAME }}/backend-despachos:latest
+
               cd ~/app/backend
+
+              docker compose down || true
+
               docker compose pull
-              docker compose up -d
+
+              docker compose up -d --remove-orphans
+
               docker image prune -f
-            ENDSSH
+
+ENDSSH
